@@ -24,6 +24,18 @@ struct arg_file *o, *file;
 struct arg_end* end;
 
 int main(int argc, char** argv) {
+#ifdef _WIN32
+	/* Warns if not run in the command prompt, closes after 10 seconds */
+	HWND console_window = GetConsoleWindow();
+	DWORD cw_process_id;
+	GetWindowThreadProcessId(console_window, &cw_process_id);
+	if (GetCurrentProcessId() == cw_process_id) {
+		puts("This program is meant to be run in the command prompt.");
+		Sleep(10 * 1000);
+		return 1;
+	}
+#endif
+
 	void* argtable[] = {
 		help = arg_litn("h", "help", 0, 1, "display this help and exit"),
 		version = arg_litn("v", "version", 0, 1, "display version info and exit"),
