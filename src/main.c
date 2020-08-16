@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
 		version = arg_litn("v", "version", 0, 1, "display version info and exit"),
 		o = arg_filen("o", "output", "faked-<file>", 0, 1, "output file"),
 		file = arg_filen(NULL, NULL, "<file>", 1, 1, "input file"),
-		ms = arg_dbln("d", "duration", "<ms>", 1, 1, "faked length of video"),
+		ms = arg_dbln("d", "duration", "<ms>", 1, 1, "faked duration of video"),
 		end = arg_end(20),
 	};
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
 		exitcode = 2;
 		goto exit;
 	}
-	/* + identifier + size = offset of length (double) */
+	/* + identifier + size = offset of duration (double) */
 	addr += sizeof DURATION_IDENTIFIER + sizeof(byte);
 
 	/* Convert fake duration (double) to big-endian array of bytes */
