@@ -7,11 +7,10 @@
 #include <string.h>
 
 #include "argtable3.h"
+#include "config.h"
 #include "endian.h"
 #include "util.h"
 
-/* TODO: Configure using Meson */
-#define VERSION "1.0.0"
 #define BUF_SIZE 512
 
 #define MATROSKA "matroska"

@@ -1,8 +1,8 @@
 project('fake-matroska-duration', 'c',
-	version : '1.0.0',
-	license : ['MIT'],
-	meson_version : '>= 0.50.0',
-	default_options : ['warning_level=3', 'buildtype=debugoptimized', 'c_std=c99']
+	version: '1.0.0',
+	license: ['MIT'],
+	meson_version: '>= 0.50.0',
+	default_options: ['warning_level=3', 'buildtype=debugoptimized', 'c_std=c99']
 )
 
 inc = [include_directories('include')]
