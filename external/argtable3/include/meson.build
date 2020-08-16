@@ -1,0 +1,1 @@
+argtable3_headers = [files('argtable3.h')]
