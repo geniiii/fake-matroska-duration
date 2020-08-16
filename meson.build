@@ -14,7 +14,7 @@ subdir('external')
 subdir('include')
 subdir('src')
 
-fmd_bin = executable('fake-matroska-duration',
+fmd_bin = executable('fmd',
   main_source,
   include_directories: inc,
   link_with: [argtable3_lib],
