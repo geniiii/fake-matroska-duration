@@ -117,9 +117,7 @@ int main(int argc, char** argv) {
 	/* Convert fake duration (double) to big-endian array of bytes */
 	byte ms_as_bytes[sizeof(double)];
 	double_to_bebytes(ms_as_bytes, *ms->dval);
-	for (byte i = 0; i < sizeof(double); ++i) {
-		addr[i] = ms_as_bytes[i];
-	}
+	memcpy(addr, ms_as_bytes, sizeof(double));
 
 	if (o->count == 0) {
 		/* strlen includes null terminator */
