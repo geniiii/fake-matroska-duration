@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
 	}
 
 	/* Read only first 512 bytes
-	   It's doubtful that the duration identifier will be located after the first 512. */
+	   I'm not sure if it's possible for the duration identifier to be located after the first 512. */
 	byte buf[BUF_SIZE];
 	fread(buf, sizeof buf, sizeof(byte), fp);
 	fclose(fp);
