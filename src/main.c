@@ -9,19 +9,43 @@
 #include "argtable3.h"
 #include "config.h"
 #include "endian.h"
-#include "util.h"
+#include "fs.h"
+#include "mem.h"
 
 #define BUF_SIZE 512
 
-#define MATROSKA "matroska"
 #define WEBM "webm"
 
 const byte DURATION_IDENTIFIER[2] = {0x44, 0x89};
+const byte MATROSKA_ID[4] = {0x1A, 0x45, 0xDF, 0xA3};
 
 struct arg_lit *help, *version;
 struct arg_dbl* ms;
 struct arg_file *o, *file;
 struct arg_end* end;
+
+unsigned handle_args(void* argtable, const char* const progname, int argc, char** argv) {
+	unsigned nerrors = arg_parse(argc, argv, argtable);
+	unsigned exitcode = 0;
+
+	if (help->count > 0) {
+		printf("Usage: %s", progname);
+		arg_print_syntax(stdout, argtable, "\n");
+		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
+	}
+
+	if (version->count > 0) {
+		puts("Version: " VERSION);
+	}
+
+	if (nerrors > 0) {
+		arg_print_errors(stdout, end, progname);
+		printf("Try '%s --help' for more information.\n", progname);
+		exitcode = 1;
+	}
+
+	return exitcode;
+}
 
 int main(int argc, char** argv) {
 #ifdef _WIN32
@@ -45,29 +69,12 @@ int main(int argc, char** argv) {
 		end = arg_end(20),
 	};
 
-	unsigned exitcode = 0;
-	unsigned nerrors = arg_parse(argc, argv, argtable);
-	const char* progname = fs_basename(argv[0]);
-
 	/* initialized here as exit tries to free it */
 	FILE* fp = NULL;
+	const char* progname = fs_basename(argv[0]);
 
-	if (help->count > 0) {
-		printf("Usage: %s", progname);
-		arg_print_syntax(stdout, argtable, "\n");
-		arg_print_glossary(stdout, argtable, "  %-25s %s\n");
-		goto exit;
-	}
-
-	if (version->count > 0) {
-		puts("Version: " VERSION);
-		goto exit;
-	}
-
-	if (nerrors > 0) {
-		arg_print_errors(stdout, end, progname);
-		printf("Try '%s --help' for more information.\n", progname);
-		exitcode = 1;
+	unsigned exitcode = handle_args(argtable, progname, argc, argv);
+	if (exitcode > 0) {
 		goto exit;
 	}
 
@@ -96,10 +103,9 @@ int main(int argc, char** argv) {
 	fread(buf, sizeof buf, sizeof(byte), fp);
 	fclose(fp);
 
-	/* Search for "webm"/"matroska" in first 512 bytes
-       This is probably not the best solution, but checking for the EBML identifier isn't much better */
-	if (!fmd_memmem(buf, sizeof buf, (byte*)MATROSKA, sizeof MATROSKA - 1) && !fmd_memmem(buf, sizeof buf, (byte*)WEBM, sizeof WEBM - 1)) {
-		fputs("Input file doesn't appear to be Matroska. Please use WebM/MKV.\n", stderr);
+	/* Search for Matroska identifier at the start of the file */
+	if (!fmd_memmem(buf, sizeof MATROSKA_ID, MATROSKA_ID, sizeof MATROSKA_ID)) {
+		fputs("Input file doesn't appear to be Matroska.\n", stderr);
 		exitcode = 1;
 		goto exit;
 	}

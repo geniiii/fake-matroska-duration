@@ -1,10 +1,11 @@
+#include "fs.h"
+
+#include <string.h>
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #endif
-
-#include "util.h"
-#include <string.h>
 
 /* TODO: error handling, maybe add *BSD? */
 void fs_copy(const char* const in_f, const char* const out_f) {
@@ -18,9 +19,10 @@ void fs_copy(const char* const in_f, const char* const out_f) {
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <fcntl.h>
 	struct stat stat_buf;
 	int in_fd, out_fd;
-	offset_t offset = 0;
+	off_t offset = 0;
 
 	in_fd = open(in_f, O_RDONLY);
 	fstat(in_fd, &stat_buf);
@@ -52,39 +54,4 @@ const char* fs_basename(const char* path) {
 		base = strrchr(path, '\\');
 	}
 	return base ? base + 1 : path;
-}
-
-byte* fmd_memmem(byte* haystack, size_t haystack_len,
-				 const byte* const needle, const size_t needle_len) {
-	if (haystack == NULL || haystack_len == 0) {
-		return NULL;
-	} else if (needle == NULL || needle_len == 0) {
-		return NULL;
-	}
-
-	for (byte* h = haystack; haystack_len >= needle_len; ++h, --haystack_len) {
-		if (!memcmp(h, needle, needle_len)) {
-			return h;
-		}
-	}
-	return NULL;
-}
-
-/* EBML uses big-endian, while most CPUs are little/bi-endian.
-   This converts to big-endian on little-endian systems. */
-void double_to_bebytes(byte bytes[sizeof(double)], double vdouble) {
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-	byte lebytes[8];
-	memcpy(lebytes, (byte*)(&vdouble), sizeof(double));
-	bytes[0] = lebytes[7];
-	bytes[1] = lebytes[6];
-	bytes[2] = lebytes[5];
-	bytes[3] = lebytes[4];
-	bytes[4] = lebytes[3];
-	bytes[5] = lebytes[2];
-	bytes[6] = lebytes[1];
-	bytes[7] = lebytes[0];
-#else
-	memcpy(bytes, (byte*)(&doubleVariable), sizeof(double));
-#endif
 }

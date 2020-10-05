@@ -14,8 +14,12 @@ subdir('external')
 subdir('include')
 subdir('src')
 
+cc = meson.get_compiler('c')
+m_dep = cc.find_library('m', required : false)
+
 fmd_bin = executable('fmd',
   main_source,
   include_directories: inc,
   link_with: [argtable3_lib],
+  dependencies: [m_dep],
   extra_files: project_headers)
