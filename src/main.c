@@ -14,8 +14,6 @@
 
 #define BUF_SIZE 512
 
-#define WEBM "webm"
-
 const byte DURATION_IDENTIFIER[2] = {0x44, 0x89};
 const byte MATROSKA_ID[4] = {0x1A, 0x45, 0xDF, 0xA3};
 
